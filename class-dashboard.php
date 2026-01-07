@@ -1,5 +1,6 @@
 <?php
 namespace JPJULIAO\B2BKing\User_Dashboard;
+
 class Dashboard
 {
   public function __construct()
@@ -8,11 +9,8 @@ class Dashboard
       'woocommerce_account_dashboard',
       array($this, 'account_dashboard')
     );
-    add_action(
-      'woocommerce_account_dashboard',
-      array($this, 'popular_products')
-    );
   }
+
   public function account_dashboard()
   {
     $user_id = get_current_user_id();
@@ -20,8 +18,10 @@ class Dashboard
 
     if ($is_b2b === 'yes') {
       $this->page_content();
+      $this->popular_products();
     }
   }
+
   public function page_content()
   {
 
@@ -30,7 +30,7 @@ class Dashboard
       ?>
       <div class="b2bkingpreloader">
         <img class="b2bking_loader_icon_button"
-          src="<?php echo esc_attr(plugins_url('/includes/assets/images/loaderpagegold5.svg', __FILE__)); ?>">
+          src="<?php echo esc_attr(plugins_url('/assets/images/loaderpagegold5.svg', __FILE__)); ?>">
       </div>
       <?php
     }
@@ -96,7 +96,7 @@ class Dashboard
                     </div>
                     <!-- column -->
                     <img class="b2bking_reports_icon_loader"
-                      src="<?php echo esc_attr(plugins_url('/includes/assets/images/loaderpagegold5.svg', __FILE__)); ?>">
+                      src="<?php echo esc_attr(plugins_url('/assets/images/loaderpagegold5.svg', __FILE__)); ?>">
                     <div class="col-lg-9">
                       <div class="campaign ct-charts"></div>
                     </div>
