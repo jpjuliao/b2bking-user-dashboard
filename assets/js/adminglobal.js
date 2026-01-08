@@ -1192,10 +1192,10 @@
 					firstday: firstday,
 					lastday: lastday,
 				};
-				console.log(ajaxurl, datavar);
+				// console.log(ajaxurl, datavar);
 
 				$.post(ajaxurl.ajaxurl, datavar, function (response) {
-					console.log(response);
+					// console.log(response);
 
 					let data = response.split('*');
 
@@ -3569,8 +3569,6 @@
 							}
 						}
 					}
-
-					console.log(datavar);
 
 					$.post(ajaxurl, datavar, function (response) {
 						if (response.startsWith('vatfailed')) {

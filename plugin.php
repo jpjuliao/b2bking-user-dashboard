@@ -30,7 +30,7 @@ add_action('template_redirect', function () {
 });
 
 add_action('wp_loaded', function () {
-  if (is_admin() || !wp_doing_ajax()) {
+  if (!wp_doing_ajax()) {
     return;
   }
   require_once plugin_dir_path(__FILE__) . 'class-ajax.php';
