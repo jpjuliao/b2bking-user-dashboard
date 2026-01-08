@@ -9,12 +9,14 @@ class UI
 
     add_action(
       'woocommerce_account_dashboard',
-      [$this, 'reports_page_content']
+      [$this, 'reports_page_content'],
+      5
     );
 
     add_action(
       'woocommerce_account_dashboard',
-      [$this, 'popular_products']
+      [$this, 'popular_products'],
+      5
     );
   }
 
