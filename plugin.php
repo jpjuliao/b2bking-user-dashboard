@@ -17,10 +17,15 @@ if (!defined('WPINC')) {
   die;
 }
 
-add_action('template_redirect', function () {
+function is_b2b_user(): bool
+{
   $user_id = get_current_user_id();
   $is_b2b = get_user_meta($user_id, 'b2bking_b2buser', true);
-  if ($is_b2b !== 'yes') {
+  return $is_b2b === 'yes';
+}
+
+add_action('template_redirect', function () {
+  if (!is_b2b_user()) {
     return;
   }
   require_once plugin_dir_path(__FILE__) . 'class-ui.php';
@@ -30,7 +35,7 @@ add_action('template_redirect', function () {
 });
 
 add_action('wp_loaded', function () {
-  if (!wp_doing_ajax()) {
+  if (!is_b2b_user() || !wp_doing_ajax()) {
     return;
   }
   require_once plugin_dir_path(__FILE__) . 'class-ajax.php';

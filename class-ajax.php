@@ -10,19 +10,19 @@ class AJAX
     add_action('wp_ajax_nopriv_b2bking_custom_data', [$this, 'ajax_handler']);
   }
 
-  public function ajax_handler()
+  public function ajax_handler(): void
   {
     if (!check_ajax_referer('b2bking_security_nonce', 'security')) {
       wp_send_json_error('Invalid security token sent.');
       wp_die();
     }
 
-    $this->get_data();
+    $this->print_data();
     wp_die();
 
   }
 
-  function get_data()
+  public function print_data(): void
   {
 
     $customers = 'user_' . get_current_user_id();

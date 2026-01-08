@@ -13,7 +13,7 @@ class Scripts
     });
   }
 
-  public function main_scripts()
+  public function main_scripts(): void
   {
     wp_enqueue_style(
       'b2bking_custom_style',
@@ -62,7 +62,7 @@ class Scripts
 
   }
 
-  public function get_b2bking_data()
+  public function get_b2bking_data(): array
   {
     if (defined('WC_PLUGIN_FILE')) {
       $symbol = get_woocommerce_currency_symbol();
@@ -80,9 +80,6 @@ class Scripts
       $pageslug = sanitize_text_field($_GET['post']);
     }
 
-
-
-    // Send data to JS
     $translation_array = array(
       'admin_url' => get_admin_url(),
       'plugin_url' => plugins_url('', dirname(__FILE__)),
@@ -326,9 +323,7 @@ class Scripts
 
     $searchbar = ob_get_clean();
     $translation_array['searchbarhtml'] = $searchbar;
-    // end HTML for toolbar
 
-    // generate HTML for registration form shortcodes display
     $registration_roles = get_posts([
       'post_type' => 'b2bking_custom_role',
       'post_status' => 'publish',
@@ -359,9 +354,7 @@ class Scripts
       }
     }
 
-    // if setting for registration not enabled, show warning here
     if (get_option('woocommerce_enable_myaccount_registration') !== 'yes') {
-      // show warnings
       $shtml .= '<li class="b2bking_please_enable_message"><a target="_blank" href="' . admin_url('admin.php?page=wc-settings&tab=account') . '">' . esc_html__('For login + registration forms to work correctly, please enable the following setting: WooCommerce -> Settings -> Accounts -> Allow customers to create an account on the "My account" page.', 'b2bking') . '</a></li>';
     }
 
@@ -563,7 +556,7 @@ class Scripts
     return $translation_array;
   }
 
-  public function get_dashboard_data()
+  public function get_dashboard_data(): array
   {
 
     $data = self::b2bking_get_dashboard_data();
@@ -581,7 +574,7 @@ class Scripts
 
   }
 
-  public static function b2bking_get_dashboard_data()
+  public static function b2bking_get_dashboard_data(): array
   {
 
     $data = array();
@@ -868,8 +861,10 @@ class Scripts
     return $data;
   }
 
-  private static function convert_to_base_currency($order, $value)
-  {
+  private static function convert_to_base_currency(
+    object $order,
+    float $value
+  ): float {
     if (defined('WOOCS_VERSION')) {
       global $WOOCS;
       $order_currency = $order->get_currency();
@@ -886,7 +881,7 @@ class Scripts
     return $value;
   }
 
-  public function base_scripts()
+  public function base_scripts(): void
   {
 
     wp_enqueue_style(

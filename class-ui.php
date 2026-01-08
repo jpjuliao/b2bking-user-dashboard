@@ -20,7 +20,7 @@ class UI
     );
   }
 
-  public function reports_page_content()
+  public function reports_page_content(): void
   {
 
     // preloader if not in ajax - in ajax preloader is added via JS for smoother animations
@@ -219,7 +219,7 @@ class UI
 
   }
 
-  public function popular_products()
+  public function popular_products(): void
   {
     $products = [];
     $id = get_current_user_id();
