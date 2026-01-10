@@ -2,7 +2,7 @@
 
 namespace JPJULIAO\B2BKing\User_Dashboard;
 
-class UI
+class User_Report
 {
   public function __construct()
   {

@@ -1,7 +1,7 @@
 <?php
 namespace JPJULIAO\B2BKing\User_Dashboard;
 
-class Scripts
+class User_Report_Scripts
 {
   public $version = '1.0';
 

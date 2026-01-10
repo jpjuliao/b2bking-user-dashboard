@@ -2,7 +2,7 @@
 
 namespace JPJULIAO\B2BKing\User_Dashboard;
 
-class AJAX
+class User_Report_AJAX
 {
   public function __construct()
   {
