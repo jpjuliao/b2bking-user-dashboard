@@ -9,6 +9,7 @@ This is a plugin for the B2BKing premium plugin to enable a more advanced dashbo
 - **Advanced report in the account of B2B users**: Sales charts and most popular produts.
 - **Information table for guests**: Adds an information table without prices for guest users.
 - **Add discounted price to the information table**: Adds the discounted price to the information table for B2B users.
+- **Add subtotal column to the variations table**: Adds the subtotal column to the variations table for B2B users.
 
 ## Installation
 1. Ensure **B2BKing Premium** is installed and active.

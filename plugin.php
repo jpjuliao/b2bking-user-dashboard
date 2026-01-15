@@ -30,9 +30,17 @@ define('PLUGIN_URL', plugin_dir_url(__FILE__));
 require_once(
   PLUGIN_PATH . 'modules/user-report/class-user-report.php'
 );
-new User_Report();
-
 require_once(
-  PLUGIN_PATH . 'modules/info-table/class-info-table.php'
+  PLUGIN_PATH . 'modules/guest-info-table/class-guest-info-table.php'
 );
-new Info_Table();
+require_once(
+  PLUGIN_PATH . 'modules/b2b-info-table/class-b2b-info-table.php'
+);
+require_once(
+  PLUGIN_PATH . 'modules/variations-columns/class-variations-columns.php'
+);
+
+new User_Report();
+new Guest_Info_Table();
+new B2B_Info_Table();
+new Variations_Columns();
