@@ -17,6 +17,9 @@ if (!defined('WPINC')) {
   die;
 }
 
+define('PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('PLUGIN_URL', plugin_dir_url(__FILE__));
+
 function is_b2b_user(): bool
 {
   $user_id = get_current_user_id();
@@ -24,30 +27,51 @@ function is_b2b_user(): bool
   return $is_b2b === 'yes';
 }
 
-define('PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('PLUGIN_URL', plugin_dir_url(__FILE__));
+function get_modules(): array
+{
+  return [
+    'User_Report' => [
+      'filename' => 'user-report/class-user-report',
+      'enabled' => true,
+    ],
+    'Guest_Info_Table' => [
+      'filename' => 'guest-info-table/class-guest-info-table',
+      'enabled' => true,
+    ],
+    'B2B_Info_Table' => [
+      'filename' => 'b2b-info-table/class-b2b-info-table',
+      'enabled' => true,
+    ],
+    'Variations_Columns' => [
+      'filename' => 'variations-columns/class-variations-columns',
+      'enabled' => true,
+    ],
+    'Shop_Filters' => [
+      'filename' => 'shop-filters/class-shop-filters',
+      'enabled' => true,
+    ],
+    'Bulk_Actions' => [
+      'filename' => 'bulk-actions/class-bulk-actions',
+      'enabled' => false,
+    ],
+  ];
+}
 
-require_once(
-  PLUGIN_PATH . 'modules/user-report/class-user-report.php'
-);
-require_once(
-  PLUGIN_PATH . 'modules/guest-info-table/class-guest-info-table.php'
-);
-require_once(
-  PLUGIN_PATH . 'modules/b2b-info-table/class-b2b-info-table.php'
-);
-require_once(
-  PLUGIN_PATH . 'modules/variations-columns/class-variations-columns.php'
-);
-require_once(
-  PLUGIN_PATH . 'modules/shop-filters/class-shop-filters.php'
-);
-// require_once(
-//   PLUGIN_PATH . 'modules/bulk-actions/class-bulk-actions.php'
-// );
+function init_modules(array $modules): void
+{
+  foreach ($modules as $class_name => $module) {
+    if (!$module['enabled']) {
+      continue;
+    }
 
-new User_Report();
-new Guest_Info_Table();
-new B2B_Info_Table();
-new Variations_Columns();
-new Shop_Filters();
+    require_once(
+      PLUGIN_PATH . "modules/{$module['filename']}.php"
+    );
+
+    $class_name = __NAMESPACE__ . '\\' . $class_name;
+
+    new $class_name();
+  }
+}
+
+init_modules(get_modules());

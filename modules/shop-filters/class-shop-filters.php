@@ -93,9 +93,11 @@ class Shop_Filters
           ?>
           <li>
             <a href="<?php echo esc_url($filter_url); ?>" class="filter-btn <?php echo $is_active ? 'active' : ''; ?>">
-              <?php if ($is_active): ?><strong><?php endif; ?>
+              <?php if ($is_active): ?>
+                <strong><?php echo esc_html($filter_label); ?></strong>
+              <?php else: ?>
                 <?php echo esc_html($filter_label); ?>
-                <?php if ($is_active): ?></strong><?php endif; ?>
+              <?php endif; ?>
             </a>
           </li>
         <?php endforeach; ?>
