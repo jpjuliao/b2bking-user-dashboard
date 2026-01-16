@@ -12,7 +12,9 @@
             </div>
           </a>
           <div class="product-add-to-cart">
-            <?php echo do_shortcode('[add_to_cart id="' . $product_id . '"]'); ?>
+            <?php echo do_shortcode(
+              '[add_to_cart id="' . $product_id . '"]'
+            ); ?>
           </div>
         </div>
       </div>
