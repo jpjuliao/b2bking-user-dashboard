@@ -50,6 +50,39 @@ class Shop_Filters
         wp_redirect(home_url($clean_uri), 301);
         exit;
       }
+
+      // Parse query string to handle multiple values for the same parameter
+      $query_string = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+      if ($query_string) {
+        $params = [];
+        parse_str($query_string, $params);
+
+        // Manually parse to get ALL values (parse_str only gets the last one)
+        $query_parts = explode('&', $query_string);
+        $multi_params = [];
+
+        foreach ($query_parts as $part) {
+          if (strpos($part, '=') !== false) {
+            list($key, $value) = explode('=', $part, 2);
+            $key = urldecode($key);
+            $value = urldecode($value);
+
+            if (!isset($multi_params[$key])) {
+              $multi_params[$key] = [];
+            }
+            $multi_params[$key][] = $value;
+          }
+        }
+
+        // Update $_GET with arrays for parameters that have multiple values
+        foreach ($multi_params as $key => $values) {
+          if (count($values) > 1) {
+            $_GET[$key] = $values;
+          } elseif (count($values) === 1) {
+            $_GET[$key] = $values[0];
+          }
+        }
+      }
     }
 
     return $query_vars;
@@ -222,24 +255,24 @@ class Shop_Filters
       <h4>
         <?php echo esc_html($title); ?>
       </h4>
-        <ul class="filter-checkboxes">
-            <?php foreach ($items as $value => $label): ?>
-                <?php
-                $is_checked = in_array($value, $selected_values);
-                $checkbox_id = esc_attr($input_name . '_' . $value);
-                ?>
-                <li>
-                  <label for="<?php echo $checkbox_id; ?>">
-                    <input type="checkbox" id="<?php echo $checkbox_id; ?>" name="<?php echo esc_attr($input_name); ?>[]"
-                      value="<?php echo esc_attr($value); ?>" <?php checked($is_checked, true); ?>>
-                    <span><?php echo esc_html($label); ?></span>
-                  </label>
-                </li>
-            <?php endforeach; ?>
-          </ul>
-        </div>
-        <?php
-        return ob_get_clean();
+      <ul class="filter-checkboxes">
+        <?php foreach ($items as $value => $label): ?>
+          <?php
+          $is_checked = in_array($value, $selected_values);
+          $checkbox_id = esc_attr($input_name . '_' . $value);
+          ?>
+          <li>
+            <label for="<?php echo $checkbox_id; ?>">
+              <input type="checkbox" id="<?php echo $checkbox_id; ?>" name="<?php echo esc_attr($input_name); ?>[]"
+                value="<?php echo esc_attr($value); ?>" <?php checked($is_checked, true); ?>>
+              <span><?php echo esc_html($label); ?></span>
+            </label>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+    <?php
+    return ob_get_clean();
   }
 
   public function render_price_filter(array $atts): string
@@ -260,20 +293,20 @@ class Shop_Filters
 
     ob_start();
     ?>
-      <div class="shop-filters-control">
-        <h4>Price:</h4>
-        <span>$
-          <?php echo esc_html($min_price); ?>
-        </span>
-        <input type="range" name="price_min" min="<?php echo esc_attr($min_price); ?>"
-          max="<?php echo esc_attr($max_price); ?>" value="<?php echo esc_attr($min_price); ?>">
-        <input type="range" name="price_max" min="<?php echo esc_attr($min_price); ?>"
-          max="<?php echo esc_attr($max_price); ?>" value="<?php echo esc_attr($max_price); ?>">
-        <span>$
-          <?php echo esc_html($max_price); ?>
-        </span>
-      </div>
-      <?php
-      return ob_get_clean();
+    <div class="shop-filters-control">
+      <h4>Price:</h4>
+      <span>$
+        <?php echo esc_html($min_price); ?>
+      </span>
+      <input type="range" name="price_min" min="<?php echo esc_attr($min_price); ?>"
+        max="<?php echo esc_attr($max_price); ?>" value="<?php echo esc_attr($min_price); ?>">
+      <input type="range" name="price_max" min="<?php echo esc_attr($min_price); ?>"
+        max="<?php echo esc_attr($max_price); ?>" value="<?php echo esc_attr($max_price); ?>">
+      <span>$
+        <?php echo esc_html($max_price); ?>
+      </span>
+    </div>
+    <?php
+    return ob_get_clean();
   }
 }
