@@ -17,9 +17,7 @@ class Shop_Filters
     require_once __DIR__ . '/class-shop-filters-query.php';
     require_once __DIR__ . '/class-shop-filters-renderer.php';
     require_once __DIR__ . '/class-shop-filters-url-handler.php';
-    if (is_admin()) {
-      require_once __DIR__ . '/class-shop-filters-admin.php';
-    }
+    require_once __DIR__ . '/class-shop-filters-admin.php';
   }
 
   private function init()
@@ -27,8 +25,6 @@ class Shop_Filters
     new Shop_Filters_Query();
     new Shop_Filters_URL_Handler();
     new Shop_Filters_Renderer();
-    if (is_admin()) {
-      new Shop_Filters_Admin();
-    }
+    new Shop_Filters_Admin();
   }
 }

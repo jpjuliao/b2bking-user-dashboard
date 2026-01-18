@@ -34,7 +34,7 @@ class Shop_Filters_Admin
     add_settings_section(
       'b2bking_addons_shop_filters_section',
       'Filter Settings',
-      '__return_empty_string', // Use a valid callable
+      '__return_empty_string',
       'b2bking-addons-shop-filters'
     );
 
@@ -65,7 +65,12 @@ class Shop_Filters_Admin
   {
     $options = get_option(self::OPTION_NAME);
     $key = $args['key'];
-    $enabled = isset($options[$key]['enabled']) ? $options[$key]['enabled'] : false;
+
+    if ($options === false) {
+      $enabled = 1;
+    } else {
+      $enabled = isset($options[$key]['enabled']) ? $options[$key]['enabled'] : 0;
+    }
     $title = isset($options[$key]['title']) ? $options[$key]['title'] : '';
     ?>
     <div style="margin-bottom: 10px;">

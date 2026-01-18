@@ -228,14 +228,19 @@ class Shop_Filters_Renderer extends Shop_Filters_Base
   private function get_filter_setting($key)
   {
     $defaults = [
-      'enabled' => 0,
+      'enabled' => 1,
       'title' => '',
     ];
 
-    $settings = get_option('b2bking_addons_shop_filters_settings', []);
+    $settings = get_option('b2bking_addons_shop_filters_settings', false);
+
+    if ($settings === false) {
+      return wp_parse_args(['enabled' => 1], $defaults);
+    }
 
     if (isset($settings[$key])) {
-      return wp_parse_args($settings[$key], $defaults);
+      $enabled = isset($settings[$key]['enabled']) ? $settings[$key]['enabled'] : 0;
+      return wp_parse_args(['enabled' => $enabled] + $settings[$key], $defaults);
     }
 
     return $defaults;
