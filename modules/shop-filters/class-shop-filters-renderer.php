@@ -17,7 +17,6 @@ class Shop_Filters_Renderer extends Shop_Filters_Base
     ?>
     <form method="get" action="<?php echo esc_url($shop_url); ?>" class="shop-filters-form">
       <?php
-      echo $this->render_product_price_filter($atts);
       echo $this->render_product_best_new_discounts_filter($atts);
       echo $this->render_product_taxonomies_filter($atts);
       echo $this->render_product_attributes_filter($atts);
@@ -171,55 +170,6 @@ class Shop_Filters_Renderer extends Shop_Filters_Base
           </li>
         <?php endforeach; ?>
       </ul>
-    </div>
-    <?php
-    return ob_get_clean();
-  }
-
-  public function render_product_price_filter(array $atts): string
-  {
-    $settings = $this->get_filter_setting('price');
-    if (!$settings['enabled']) {
-      return '';
-    }
-    $title = $settings['title'] ?: 'Price:';
-
-    global $wpdb;
-
-    $min_price = 0;
-    $max_price = 0;
-
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->wc_product_meta_lookup}'")) {
-      $prices = $wpdb->get_row("SELECT min(min_price) as min_price, max(max_price) as max_price FROM {$wpdb->wc_product_meta_lookup}");
-      $min_price = $prices->min_price ?? 0;
-      $max_price = $prices->max_price ?? 0;
-    } else {
-
-      $prices = $wpdb->get_row("SELECT min(meta_value+0) as min_price, max(meta_value+0) as max_price FROM {$wpdb->postmeta} WHERE meta_key='_price'");
-      $min_price = $prices->min_price ?? 0;
-      $max_price = $prices->max_price ?? 0;
-    }
-
-    $min_price = floor($min_price);
-    $max_price = ceil($max_price);
-
-    $current_min = isset($_GET['min_price']) ? floatval($_GET['min_price']) : $min_price;
-    $current_max = isset($_GET['max_price']) ? floatval($_GET['max_price']) : $max_price;
-
-    ob_start();
-    ?>
-    <div class="shop-filters-control">
-      <h4><?php echo esc_html($title); ?></h4>
-      <span>$
-        <?php echo esc_html($min_price); ?>
-      </span>
-      <input type="range" name="min_price" min="<?php echo esc_attr($min_price); ?>"
-        max="<?php echo esc_attr($max_price); ?>" value="<?php echo esc_attr($current_min); ?>">
-      <input type="range" name="max_price" min="<?php echo esc_attr($min_price); ?>"
-        max="<?php echo esc_attr($max_price); ?>" value="<?php echo esc_attr($current_max); ?>">
-      <span>$
-        <?php echo esc_html($max_price); ?>
-      </span>
     </div>
     <?php
     return ob_get_clean();

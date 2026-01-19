@@ -39,7 +39,6 @@ class Shop_Filters_Admin
     );
 
     $fields = [
-      'price' => 'Price',
       'product_cat' => 'Product Category',
       'product_tag' => 'Product Tag',
       'product_brand' => 'Product Brand',
