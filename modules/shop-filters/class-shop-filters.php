@@ -18,6 +18,7 @@ class Shop_Filters
     require_once __DIR__ . '/class-shop-filters-renderer.php';
     require_once __DIR__ . '/class-shop-filters-url-handler.php';
     require_once __DIR__ . '/class-shop-filters-admin.php';
+    require_once __DIR__ . '/class-shop-filters-pjax.php';
   }
 
   private function init()
@@ -26,5 +27,6 @@ class Shop_Filters
     new Shop_Filters_URL_Handler();
     new Shop_Filters_Renderer();
     new Shop_Filters_Admin();
+    new Shop_Filters_Pjax();
   }
 }
