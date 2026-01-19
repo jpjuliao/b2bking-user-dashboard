@@ -9,12 +9,12 @@ class Shop_Filters_Pjax extends Shop_Filters_Base
 
     add_action(
       'wp_enqueue_scripts',
-      [$this, 'pjax_scripts'],
+      [$this, 'pjax_cripts'],
       31
     );
   }
 
-  public function pjax_scripts()
+  public function pjax_cripts()
   {
 
     if (!function_exists('\woodmart_get_localized_string_array')) {

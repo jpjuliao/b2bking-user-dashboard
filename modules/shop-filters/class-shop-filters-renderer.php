@@ -96,7 +96,7 @@ class Shop_Filters_Renderer extends Shop_Filters_Base
     }
 
     return $this->render_checkbox_list(
-      'Filter Products:',
+      'Filter',
       $filters,
       'filter',
       $current_filters
@@ -111,7 +111,7 @@ class Shop_Filters_Renderer extends Shop_Filters_Base
     if ($tag_settings['enabled']) {
       $outputs[] = $this->render_simple_taxonomy_filter(
         'product_tag',
-        $tag_settings['title'] ?: 'Product Tags:',
+        $tag_settings['title'] ?: 'Product Tags',
         'product_tag'
       );
     }
@@ -120,7 +120,7 @@ class Shop_Filters_Renderer extends Shop_Filters_Base
     if ($cat_settings['enabled']) {
       $outputs[] = $this->render_simple_taxonomy_filter(
         'product_cat',
-        $cat_settings['title'] ?: 'Product Categories:',
+        $cat_settings['title'] ?: 'Product Categories',
         'product_cat'
       );
     }
@@ -129,7 +129,7 @@ class Shop_Filters_Renderer extends Shop_Filters_Base
     if ($brand_settings['enabled']) {
       $outputs[] = $this->render_simple_taxonomy_filter(
         'product_brand',
-        $brand_settings['title'] ?: 'Brands:',
+        $brand_settings['title'] ?: 'Product Brands',
         'product_brand'
       );
     }
@@ -149,28 +149,33 @@ class Shop_Filters_Renderer extends Shop_Filters_Base
 
     ob_start();
     ?>
-    <div class="shop-filters-control">
-      <h4>
-        <?php echo esc_html($title); ?>
-      </h4>
-      <ul class="filter-checkboxes">
-        <?php foreach ($items as $value => $label): ?>
-          <?php
-          $is_checked = in_array($value, $selected_values);
-          $checkbox_id = esc_attr($input_name . '_' . $value);
-          ?>
-          <li>
-            <label for="<?php echo $checkbox_id; ?>">
-              <input type="checkbox" id="<?php echo $checkbox_id; ?>" name="<?php echo esc_attr($input_name); ?>[]"
-                value="<?php echo esc_attr($value); ?>" <?php checked($is_checked, true); ?>>
-              <span>
-                <?php echo esc_html($label); ?>
-              </span>
-            </label>
-          </li>
-        <?php endforeach; ?>
-      </ul>
-    </div>
+    <details class="shop-filters-control shop-filters-accordion-item" open>
+      <summary class="shop-filters-accordion-header <?php echo $input_name ?>">
+        <h4>
+          <?php echo esc_html($title); ?>
+        </h4>
+        <span class="icon-toggle"></span>
+      </summary>
+      <div class="shop-filters-accordion-content">
+        <ul class="filter-checkboxes">
+          <?php foreach ($items as $value => $label): ?>
+            <?php
+            $is_checked = in_array($value, $selected_values);
+            $checkbox_id = esc_attr($input_name . '_' . $value);
+            ?>
+            <li>
+              <label for="<?php echo $checkbox_id; ?>">
+                <input type="checkbox" id="<?php echo $checkbox_id; ?>" name="<?php echo esc_attr($input_name); ?>[]"
+                  value="<?php echo esc_attr($value); ?>" <?php checked($is_checked, true); ?>>
+                <span>
+                  <?php echo esc_html($label); ?>
+                </span>
+              </label>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    </details>
     <?php
     return ob_get_clean();
   }
