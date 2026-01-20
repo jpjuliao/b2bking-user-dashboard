@@ -90,7 +90,6 @@ abstract class Shop_Filters_Base
     ob_start();
     ?>
     <div class="filter-group">
-      <h4 class="filter-title"><?php echo esc_html($title); ?></h4>
       <ul class="filter-options">
         <?php foreach ($items as $value => $label): ?>
           <li>
@@ -105,5 +104,35 @@ abstract class Shop_Filters_Base
     </div>
     <?php
     return ob_get_clean();
+  }
+  protected function remove_unwanted_shortcodes(
+    string $content,
+    array $whitelist = []
+  ): string {
+    global $shortcode_tags;
+
+    if (empty($shortcode_tags) || !is_array($shortcode_tags)) {
+      return $content;
+    }
+
+    if (empty($whitelist)) {
+      return strip_shortcodes($content);
+    }
+
+    $shortcodes_to_remove = array_diff(array_keys($shortcode_tags), $whitelist);
+
+    if (empty($shortcodes_to_remove)) {
+      return $content;
+    }
+
+    $pattern = get_shortcode_regex($shortcodes_to_remove);
+
+    $content = preg_replace_callback(
+      "/$pattern/",
+      fn($matches) => '',
+      $content
+    );
+
+    return $content;
   }
 }

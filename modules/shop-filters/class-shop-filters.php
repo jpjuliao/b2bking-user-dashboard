@@ -7,26 +7,39 @@ class Shop_Filters
 
   public function __construct()
   {
-    $this->includes();
-    $this->init();
+    $this->init_base();
+    $this->init_query();
+    $this->init_renderer();
+    $this->init_url_handler();
+    $this->init_pjax();
   }
 
-  private function includes()
+  private function init_base(): void
   {
     require_once __DIR__ . '/class-shop-filters-base.php';
-    require_once __DIR__ . '/class-shop-filters-query.php';
-    require_once __DIR__ . '/class-shop-filters-renderer.php';
-    require_once __DIR__ . '/class-shop-filters-url-handler.php';
-    require_once __DIR__ . '/class-shop-filters-admin.php';
-    require_once __DIR__ . '/class-shop-filters-pjax.php';
   }
 
-  private function init()
+  private function init_query(): void
   {
+    require_once __DIR__ . '/class-shop-filters-query.php';
     new Shop_Filters_Query();
-    new Shop_Filters_URL_Handler();
+  }
+
+  private function init_renderer(): void
+  {
+    require_once __DIR__ . '/class-shop-filters-renderer.php';
     new Shop_Filters_Renderer();
-    new Shop_Filters_Admin();
+  }
+
+  private function init_url_handler(): void
+  {
+    require_once __DIR__ . '/class-shop-filters-url-handler.php';
+    new Shop_Filters_URL_Handler();
+  }
+
+  private function init_pjax(): void
+  {
+    require_once __DIR__ . '/class-shop-filters-pjax.php';
     new Shop_Filters_Pjax();
   }
 }
