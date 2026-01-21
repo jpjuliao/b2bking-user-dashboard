@@ -54,6 +54,10 @@ function get_modules(): array
       'filename' => 'bulk-actions/class-bulk-actions',
       'enabled' => false,
     ],
+    'Product_Lab_Reports' => [
+      'filename' => 'product-lab-reports/class-product-lab-reports',
+      'enabled' => true,
+    ],
   ];
 }
 
