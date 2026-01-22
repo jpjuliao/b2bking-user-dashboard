@@ -11,6 +11,9 @@ class Product_Lab_Reports
 
   public function __construct()
   {
+    require_once plugin_dir_path(__FILE__) . 'class-product-lab-reports-admin.php';
+    Lab_Reports_Admin::get_instance();
+
     add_action('woocommerce_product_after_variable_attributes', [
       $this,
       'add_variation_field'
