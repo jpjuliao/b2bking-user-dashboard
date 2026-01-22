@@ -11,10 +11,22 @@ class Product_Lab_Reports
 
   public function __construct()
   {
-    add_action('woocommerce_product_after_variable_attributes', [$this, 'add_variation_field'], 10, 3);
-    add_action('woocommerce_save_product_variation', [$this, 'save_variation_field'], 10, 2);
-    add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
-    add_shortcode('lab_reports_table', [$this, 'render_table']);
+    add_action('woocommerce_product_after_variable_attributes', [
+      $this,
+      'add_variation_field'
+    ], 10, 3);
+    add_action('woocommerce_save_product_variation', [
+      $this,
+      'save_variation_field'
+    ], 10, 2);
+    add_action('admin_enqueue_scripts', [
+      $this,
+      'enqueue_admin_scripts'
+    ]);
+    add_shortcode('lab_reports_table', [
+      $this,
+      'render_table'
+    ]);
   }
 
   public function enqueue_admin_scripts($hook)
@@ -70,7 +82,12 @@ class Product_Lab_Reports
   public function save_variation_field($variation_id, $loop)
   {
     if (isset($_POST['lab_report'][$loop])) {
-      update_post_meta($variation_id, '_lab_report', sanitize_text_field($_POST['lab_report'][$loop]));
+      $attachment_id = sanitize_text_field($_POST['lab_report'][$loop]);
+      if (!empty($attachment_id)) {
+        update_post_meta($variation_id, '_lab_report', $attachment_id);
+      } else {
+        delete_post_meta($variation_id, '_lab_report');
+      }
     }
 
     if (isset($_POST['lab_report_date'][$loop])) {
