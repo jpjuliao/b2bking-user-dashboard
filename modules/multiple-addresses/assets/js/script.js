@@ -132,8 +132,10 @@ jQuery(document).ready(function ($) {
 
     $('#selected_address_id').on('change', function () {
       var addressId = $(this).val();
+      var $shippingFields = $('.woocommerce-shipping-fields__field-wrapper');
 
       if (addressId && addresses[addressId]) {
+        $shippingFields.hide();
         var address = addresses[addressId];
         $('#shipping_first_name').val(address.first_name);
         $('#shipping_last_name').val(address.last_name);
@@ -145,6 +147,7 @@ jQuery(document).ready(function ($) {
         $('#shipping_postcode').val(address.postcode);
         $('#shipping_country').val(address.country).trigger('change');
       } else {
+        $shippingFields.show();
         $('#shipping_first_name').val('');
         $('#shipping_last_name').val('');
         $('#shipping_company').val('');
@@ -157,7 +160,10 @@ jQuery(document).ready(function ($) {
       }
     });
 
-    if (defaultId) {
+    // Trigger change on init if a value is selected (handled by defaultId logic below but also need to handle browser cached values)
+    if ($('#selected_address_id').val()) {
+      $('#selected_address_id').trigger('change');
+    } else if (defaultId) {
       $('#selected_address_id').val(defaultId).trigger('change');
     }
   }
