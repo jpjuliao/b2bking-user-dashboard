@@ -62,6 +62,10 @@ function get_modules(): array
       'filename' => 'products-by-brand/class-products-by-brand',
       'enabled' => true,
     ],
+    'Multiple_Addresses' => [
+      'filename' => 'multiple-addresses/class-multiple-addresses',
+      'enabled' => true,
+    ],
   ];
 }
 
