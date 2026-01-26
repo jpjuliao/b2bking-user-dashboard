@@ -70,7 +70,7 @@ class Multiple_Addresses
     $new_items = array();
     foreach ($items as $key => $value) {
       if ($key === 'edit-address') {
-        $new_items['addresses'] = __('My Addresses', 'woocommerce');
+        $new_items['addresses'] = __('Address Book', 'woocommerce');
       } else {
         $new_items[$key] = $value;
       }
