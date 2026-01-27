@@ -101,7 +101,7 @@ class Multiple_Addresses
       wp_enqueue_script(
         'wc-multiple-addresses',
         plugin_dir_url(__FILE__) . 'assets/js/script.js',
-        array('jquery'),
+        array('jquery', 'jquery-ui-autocomplete'),
         '1.0.0',
         true
       );
