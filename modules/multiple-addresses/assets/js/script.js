@@ -156,7 +156,7 @@ jQuery(document).ready(function ($) {
         $('#shipping_city').val('');
         $('#shipping_state').val('');
         $('#shipping_postcode').val('');
-        $('#shipping_country').val('').trigger('change');
+        $('#shipping_country').val('US').trigger('change');
       }
     });
 

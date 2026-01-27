@@ -428,6 +428,39 @@ class Multiple_Addresses
   {
     if (isset($_POST['selected_address_id']) && !empty($_POST['selected_address_id'])) {
       update_post_meta($order_id, '_selected_address_id', sanitize_text_field($_POST['selected_address_id']));
+    } elseif (isset($_POST['selected_address_id']) && empty($_POST['selected_address_id'])) {
+      // Logic for new address - only if necessary fields are present
+      if (
+        empty($_POST['shipping_first_name']) ||
+        empty($_POST['shipping_address_1']) ||
+        empty($_POST['shipping_city'])
+      ) {
+        return;
+      }
+
+      $user_id = get_current_user_id();
+      if ($user_id) {
+        $addresses = $this->get_user_addresses($user_id);
+
+        $new_address = array(
+          'first_name' => sanitize_text_field($_POST['shipping_first_name'] ?? ''),
+          'last_name' => sanitize_text_field($_POST['shipping_last_name'] ?? ''),
+          'company' => sanitize_text_field($_POST['shipping_company'] ?? ''),
+          'address_1' => sanitize_text_field($_POST['shipping_address_1'] ?? ''),
+          'address_2' => sanitize_text_field($_POST['shipping_address_2'] ?? ''),
+          'city' => sanitize_text_field($_POST['shipping_city'] ?? ''),
+          'state' => sanitize_text_field($_POST['shipping_state'] ?? ''),
+          'postcode' => sanitize_text_field($_POST['shipping_postcode'] ?? ''),
+          'country' => sanitize_text_field($_POST['shipping_country'] ?? ''),
+          'phone' => sanitize_text_field($_POST['shipping_phone'] ?? '')
+        );
+
+        $address_id = uniqid('addr_');
+        $addresses[$address_id] = $new_address;
+
+        $this->save_user_addresses($user_id, $addresses);
+        update_post_meta($order_id, '_selected_address_id', $address_id);
+      }
     }
   }
 }
