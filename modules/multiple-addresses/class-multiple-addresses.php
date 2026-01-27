@@ -39,6 +39,10 @@ class Multiple_Addresses
       $this,
       'ajax_set_default_address'
     ));
+    add_action('woocommerce_before_checkout_process', array(
+      $this,
+      'capture_pre_update_address'
+    ));
     add_action('woocommerce_before_checkout_shipping_form', array(
       $this,
       'checkout_address_selector'
@@ -128,7 +132,16 @@ class Multiple_Addresses
       'phone' => get_user_meta($user_id, 'shipping_phone', true),
     );
 
-    if (array_filter($core_address)) {
+    $is_duplicate = false;
+    foreach ($addresses as $saved_address) {
+      $diff = array_diff_assoc($core_address, $saved_address);
+      if (empty($diff)) {
+        $is_duplicate = true;
+        break;
+      }
+    }
+
+    if (array_filter($core_address) && !$is_duplicate) {
       $addresses['wc_core_shipping'] = $core_address;
     }
 
@@ -139,7 +152,18 @@ class Multiple_Addresses
   {
     if (isset($addresses['wc_core_shipping'])) {
       $core = $addresses['wc_core_shipping'];
-      $fields = array('first_name', 'last_name', 'company', 'address_1', 'address_2', 'city', 'state', 'postcode', 'country', 'phone');
+      $fields = array(
+        'first_name',
+        'last_name',
+        'company',
+        'address_1',
+        'address_2',
+        'city',
+        'state',
+        'postcode',
+        'country',
+        'phone'
+      );
 
       foreach ($fields as $field) {
         if (isset($core[$field])) {
@@ -398,6 +422,46 @@ class Multiple_Addresses
     wp_send_json_success();
   }
 
+  public function capture_pre_update_address(): void
+  {
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+      return;
+    }
+
+    $addresses = get_user_meta($user_id, '_wc_multiple_addresses', true);
+    $addresses = $addresses ? $addresses : array();
+
+    $core_address = array(
+      'first_name' => get_user_meta($user_id, 'shipping_first_name', true),
+      'last_name' => get_user_meta($user_id, 'shipping_last_name', true),
+      'company' => get_user_meta($user_id, 'shipping_company', true),
+      'address_1' => get_user_meta($user_id, 'shipping_address_1', true),
+      'address_2' => get_user_meta($user_id, 'shipping_address_2', true),
+      'city' => get_user_meta($user_id, 'shipping_city', true),
+      'state' => get_user_meta($user_id, 'shipping_state', true),
+      'postcode' => get_user_meta($user_id, 'shipping_postcode', true),
+      'country' => get_user_meta($user_id, 'shipping_country', true),
+      'phone' => get_user_meta($user_id, 'shipping_phone', true),
+    );
+
+    if (!array_filter($core_address)) {
+      return;
+    }
+
+    foreach ($addresses as $existing_address) {
+      $diff = array_diff_assoc($core_address, $existing_address);
+      if (empty($diff)) {
+        return;
+      }
+    }
+
+    $address_id = uniqid('addr_');
+    $addresses[$address_id] = $core_address;
+
+    update_user_meta($user_id, '_wc_multiple_addresses', $addresses);
+  }
+
   public function checkout_address_selector($checkout): void
   {
     if (!is_user_logged_in()) {
@@ -438,7 +502,11 @@ class Multiple_Addresses
   public function save_checkout_address(int $order_id): void
   {
     if (isset($_POST['selected_address_id']) && !empty($_POST['selected_address_id'])) {
-      update_post_meta($order_id, '_selected_address_id', sanitize_text_field($_POST['selected_address_id']));
+      update_post_meta(
+        $order_id,
+        '_selected_address_id',
+        sanitize_text_field($_POST['selected_address_id'])
+      );
     } elseif (isset($_POST['selected_address_id']) && empty($_POST['selected_address_id'])) {
       if (
         empty($_POST['shipping_first_name']) ||
@@ -468,6 +536,9 @@ class Multiple_Addresses
         foreach ($addresses as $existing_id => $existing_address) {
           $diff = array_diff_assoc($new_address, $existing_address);
           if (empty($diff)) {
+            if ($existing_id === 'wc_core_shipping') {
+              continue;
+            }
             update_post_meta($order_id, '_selected_address_id', $existing_id);
             return;
           }
