@@ -20,10 +20,10 @@ jQuery(document).ready(function ($) {
       photonAddressAutocomplete('#address_1', function (data) {
         $('#address_1').val(data.line1);
         $('#city').val(data.city);
-        $('#state').val(data.state);
-        $('#shipping_state').val(data.state);
+        $('#state').val(data.state).trigger('change');
+        $('#shipping_state').val(data.state).trigger('change');
         $('#postcode').val(data.postcode);
-        $('#country').val('US'); // Usually this is an input type text or select
+        $('#country').val('US').trigger('change'); // Usually this is an input type text or select
       });
     });
 
@@ -56,9 +56,9 @@ jQuery(document).ready(function ($) {
       photonAddressAutocomplete('#address_1', function (data) {
         $('#address_1').val(data.line1);
         $('#city').val(data.city);
-        $('#state').val(data.state);
+        $('#state').val(data.state).trigger('change');
         $('#postcode').val(data.postcode);
-        $('#country').val('US');
+        $('#country').val('US').trigger('change');
       });
     });
 
@@ -153,7 +153,7 @@ jQuery(document).ready(function ($) {
     photonAddressAutocomplete('#shipping_address_1', function (data) {
       $('#shipping_address_1').val(data.line1);
       $('#shipping_city').val(data.city);
-      $('#shipping_state').val(data.state);
+      $('#shipping_state').val(data.state).trigger('change');
       $('#shipping_postcode').val(data.postcode);
       $('#shipping_country').val('US').trigger('change');
     });
@@ -198,6 +198,20 @@ jQuery(document).ready(function ($) {
   function photonAddressAutocomplete(selector, onSelect) {
     if (!$(selector).length) return;
 
+    var usStates = {
+      "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
+      "Colorado": "CO", "Connecticut": "CT", "Delaware": "DE", "Florida": "FL", "Georgia": "GA",
+      "Hawaii": "HI", "Idaho": "ID", "Illinois": "IL", "Indiana": "IN", "Iowa": "IA",
+      "Kansas": "KS", "Kentucky": "KY", "Louisiana": "LA", "Maine": "ME", "Maryland": "MD",
+      "Massachusetts": "MA", "Michigan": "MI", "Minnesota": "MN", "Mississippi": "MS", "Missouri": "MO",
+      "Montana": "MT", "Nebraska": "NE", "Nevada": "NV", "New Hampshire": "NH", "New Jersey": "NJ",
+      "New Mexico": "NM", "New York": "NY", "North Carolina": "NC", "North Dakota": "ND", "Ohio": "OH",
+      "Oklahoma": "OK", "Oregon": "OR", "Pennsylvania": "PA", "Rhode Island": "RI", "South Carolina": "SC",
+      "South Dakota": "SD", "Tennessee": "TN", "Texas": "TX", "Utah": "UT", "Vermont": "VT",
+      "Virginia": "VA", "Washington": "WA", "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY",
+      "District of Columbia": "DC"
+    };
+
     $(selector).autocomplete({
       source: function (request, response) {
         $.ajax({
@@ -221,13 +235,16 @@ jQuery(document).ready(function ($) {
 
                   label += ', ' + props.city + ', ' + props.state + ' ' + props.postcode;
 
+                  // Map state name to code if possible
+                  var stateCode = usStates[props.state] || props.state;
+
                   suggestions.push({
                     label: label,
                     value: props.housenumber ? props.housenumber + ' ' + props.street : props.street,
                     data: {
                       line1: props.housenumber ? props.housenumber + ' ' + props.street : props.street,
                       city: props.city,
-                      state: props.state,
+                      state: stateCode,
                       postcode: props.postcode,
                       country: 'US'
                     }
