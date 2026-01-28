@@ -114,7 +114,8 @@ class Multiple_Addresses
           'nonce' => wp_create_nonce('wc_multiple_addresses'),
           'addresses' => $addresses,
           'default_address_id' => $default_address_id,
-          'us_states' => $this->get_us_states()
+          'us_states' => $this->get_us_states(),
+          'photon_url' => 'https://photon.komoot.io/api/',
         )
       );
     }

@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     selectAll('.edit-address').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const addressId = this.dataset.id;
+      btn.addEventListener('click', (e) => {
+        const addressId = e.target.dataset.id;
         const address = addresses[addressId];
 
         if (!address) return;
@@ -135,9 +135,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const addressId = this.dataset.id;
         const formData = new URLSearchParams();
-        formData.append('action', 'wc_delete_address');
-        formData.append('nonce', wcMultipleAddresses.nonce);
-        formData.append('address_id', addressId);
+        const values = [
+          ['action', 'wc_delete_address'],
+          ['nonce', wcMultipleAddresses.nonce],
+          ['address_id', addressId],
+        ];
+
+        values.forEach(([key, value]) => {
+          formData.append(key, value);
+        });
 
         fetch(wcMultipleAddresses.ajax_url, {
           method: 'POST',
@@ -253,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     jQuery(selector).autocomplete({
       source: (request, response) => {
-        const url = new URL("https://photon.komoot.io/api/");
+        const url = new URL(wcMultipleAddresses.photon_url);
         url.searchParams.append('q', request.term);
         url.searchParams.append('limit', 20);
         url.searchParams.append('lang', 'en');
@@ -282,25 +288,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const props = feature.properties;
 
         if (props.countrycode === 'US' || props.country === 'United States') {
+          const street = props.street;
+          const city = props.city;
+          const state = props.state;
+          const postcode = props.postcode;
+          const stateCode = usStates[state] || state;
+          let housenumber = props.housenumber;
           let label = props.name;
-          if (props.housenumber) label = props.housenumber + ' ' + props.street;
-          else if (props.street) label = props.street;
 
-          label += ', ' + props.city + ', ' + props.state + ' ' +
-            props.postcode;
+          if (
+            typeof city === 'undefined'
+            || typeof state === 'undefined'
+            || typeof postcode === 'undefined'
+          ) {
+            return;
+          }
 
-          const stateCode = usStates[props.state] || props.state;
+          if (housenumber) {
+            housenumber = housenumber + ' ' + street;
+            label = housenumber;
+          } else if (street) {
+            label = street;
+          }
+
+          label = label + ', ' + city + ', ' + stateCode + ', ' + postcode;
 
           suggestions.push({
             label: label,
-            value: props.housenumber
-              ? props.housenumber + ' ' + props.street : props.street,
+            value: housenumber,
             data: {
-              line1: props.housenumber
-                ? props.housenumber + ' ' + props.street : props.street,
-              city: props.city,
+              line1: housenumber,
+              city: city,
               state: stateCode,
-              postcode: props.postcode,
+              postcode: postcode,
               country: 'US'
             }
           });
