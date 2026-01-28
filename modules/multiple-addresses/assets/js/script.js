@@ -1,144 +1,179 @@
-jQuery(document).ready(function ($) {
+document.addEventListener('DOMContentLoaded', function () {
 
-  if ($('.woocommerce-addresses').length) {
+  const select = (selector) => document.querySelector(selector);
+  const selectAll = (selector) => document.querySelectorAll(selector);
+  const elemID = (element) => document.getElementById(element);
+
+  if (select('.woocommerce-addresses')) {
     initAddressManagement();
   }
 
-  if ($('.woocommerce-shipping-addresses').length) {
+  if (select('.woocommerce-shipping-addresses')) {
     initCheckoutAddressSelector();
   }
 
   function initAddressManagement() {
     var addresses = wcMultipleAddresses.addresses || {};
 
-    $('#add-new-address').on('click', function () {
-      $('#address-form').show();
-      $('#save-address-form')[0].reset();
-      $('#address_id').val('');
+    var addNewBtn = elemID('add-new-address');
+    if (addNewBtn) {
+      addNewBtn.addEventListener('click', function () {
+        elemID('address-form').style.display = 'block';
+        elemID('save-address-form').reset();
+        elemID('address_id').value = '';
 
-      photonAddressAutocomplete('#address_1', function (data) {
-        $('#address_1').val(data.line1);
-        $('#city').val(data.city);
-        $('#state').val(data.state).trigger('change');
-        $('#shipping_state').val(data.state).trigger('change');
-        $('#postcode').val(data.postcode);
-        $('#country').val('US').trigger('change');
+        photonAddressAutocomplete('#address_1', function (data) {
+          setValueAndTrigger('#address_1', data.line1);
+          setValueAndTrigger('#city', data.city);
+          setValueAndTrigger('#state', data.state, true);
+          setValueAndTrigger('#shipping_state', data.state, true);
+          setValueAndTrigger('#postcode', data.postcode);
+          setValueAndTrigger('#country', 'US', true);
+        });
+      });
+    }
+
+    var cancelBtn = elemID('cancel-address');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', function () {
+        elemID('address-form').style.display = 'none';
+        elemID('save-address-form').reset();
+      });
+    }
+
+    selectAll('.edit-address').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var addressId = this.dataset.id;
+        var address = addresses[addressId];
+
+        if (!address) return;
+
+        elemID('address_id').value = addressId;
+        elemID('first_name').value = address.first_name;
+        elemID('last_name').value = address.last_name;
+        elemID('company').value = address.company;
+        elemID('address_1').value = address.address_1;
+        elemID('address_2').value = address.address_2;
+        elemID('city').value = address.city;
+        elemID('state').value = address.state;
+        elemID('postcode').value = address.postcode;
+        elemID('country').value = address.country;
+        elemID('phone').value = address.phone;
+
+        elemID('address-form').style.display = 'block';
+
+        photonAddressAutocomplete('#address_1', function (data) {
+          setValueAndTrigger('#address_1', data.line1);
+          setValueAndTrigger('#city', data.city);
+          setValueAndTrigger('#state', data.state, true);
+          setValueAndTrigger('#postcode', data.postcode);
+          setValueAndTrigger('#country', 'US', true);
+        });
       });
     });
 
-    $('#cancel-address').on('click', function () {
-      $('#address-form').hide();
-      $('#save-address-form')[0].reset();
-    });
+    var saveForm = document.getElementById('save-address-form');
+    if (saveForm) {
+      saveForm.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-    $('.edit-address').on('click', function () {
-      var addressId = $(this).data('id');
-      var address = addresses[addressId];
+        var formData = new URLSearchParams();
+        formData.append('action', 'wc_save_address');
+        formData.append('nonce', wcMultipleAddresses.nonce);
+        formData.append('address_id', elemID('address_id').value);
+        formData.append('first_name', elemID('first_name').value);
+        formData.append('last_name', elemID('last_name').value);
+        formData.append('company', elemID('company').value);
+        formData.append('address_1', elemID('address_1').value);
+        formData.append('address_2', elemID('address_2').value);
+        formData.append('city', elemID('city').value);
+        formData.append('state', elemID('state').value);
+        formData.append('postcode', elemID('postcode').value);
+        formData.append('country', elemID('country').value);
+        formData.append('phone', elemID('phone').value);
 
-      if (!address) return;
-
-      $('#address_id').val(addressId);
-      $('#first_name').val(address.first_name);
-      $('#last_name').val(address.last_name);
-      $('#company').val(address.company);
-      $('#address_1').val(address.address_1);
-      $('#address_2').val(address.address_2);
-      $('#city').val(address.city);
-      $('#state').val(address.state);
-      $('#postcode').val(address.postcode);
-      $('#country').val(address.country);
-      $('#phone').val(address.phone);
-
-      $('#address-form').show();
-
-      photonAddressAutocomplete('#address_1', function (data) {
-        $('#address_1').val(data.line1);
-        $('#city').val(data.city);
-        $('#state').val(data.state).trigger('change');
-        $('#postcode').val(data.postcode);
-        $('#country').val('US').trigger('change');
-      });
-    });
-
-    $('#save-address-form').on('submit', function (e) {
-      e.preventDefault();
-
-      $.ajax({
-        url: wcMultipleAddresses.ajax_url,
-        type: 'POST',
-        data: {
-          action: 'wc_save_address',
-          nonce: wcMultipleAddresses.nonce,
-          address_id: $('#address_id').val(),
-          first_name: $('#first_name').val(),
-          last_name: $('#last_name').val(),
-          company: $('#company').val(),
-          address_1: $('#address_1').val(),
-          address_2: $('#address_2').val(),
-          city: $('#city').val(),
-          state: $('#state').val(),
-          postcode: $('#postcode').val(),
-          country: $('#country').val(),
-          phone: $('#phone').val()
-        },
-        success: function (response) {
-          if (response.success) {
-            location.reload();
-          } else {
-            alert(response.data);
+        fetch(wcMultipleAddresses.ajax_url, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           }
-        },
-        error: function () {
-          alert('An error occurred. Please try again.');
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (response) {
+            if (response.success) {
+              location.reload();
+            } else {
+              alert(response.data);
+            }
+          })
+          .catch(function () {
+            alert('An error occurred. Please try again.');
+          });
+      });
+    }
+
+    selectAll('.delete-address').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (!confirm(wcMultipleAddresses.delete_confirm || 'Are you sure you want to delete this address?')) {
+          return;
         }
+
+        var addressId = this.dataset.id;
+        var formData = new URLSearchParams();
+        formData.append('action', 'wc_delete_address');
+        formData.append('nonce', wcMultipleAddresses.nonce);
+        formData.append('address_id', addressId);
+
+        fetch(wcMultipleAddresses.ajax_url, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          }
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (response) {
+            if (response.success) {
+              location.reload();
+            }
+          })
+          .catch(function () {
+            alert('An error occurred. Please try again.');
+          });
       });
     });
 
-    $('.delete-address').on('click', function () {
-      if (!confirm(wcMultipleAddresses.delete_confirm || 'Are you sure you want to delete this address?')) {
-        return;
-      }
+    selectAll('.set-default-address').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var addressId = this.dataset.id;
+        var formData = new URLSearchParams();
+        formData.append('action', 'wc_set_default_address');
+        formData.append('nonce', wcMultipleAddresses.nonce);
+        formData.append('address_id', addressId);
 
-      var addressId = $(this).data('id');
-
-      $.ajax({
-        url: wcMultipleAddresses.ajax_url,
-        type: 'POST',
-        data: {
-          action: 'wc_delete_address',
-          nonce: wcMultipleAddresses.nonce,
-          address_id: addressId
-        },
-        success: function (response) {
-          if (response.success) {
-            location.reload();
+        fetch(wcMultipleAddresses.ajax_url, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           }
-        },
-        error: function () {
-          alert('An error occurred. Please try again.');
-        }
-      });
-    });
-
-    $('.set-default-address').on('click', function () {
-      var addressId = $(this).data('id');
-
-      $.ajax({
-        url: wcMultipleAddresses.ajax_url,
-        type: 'POST',
-        data: {
-          action: 'wc_set_default_address',
-          nonce: wcMultipleAddresses.nonce,
-          address_id: addressId
-        },
-        success: function (response) {
-          if (response.success) {
-            location.reload();
-          }
-        },
-        error: function () {
-          alert('An error occurred. Please try again.');
-        }
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (response) {
+            if (response.success) {
+              location.reload();
+            }
+          })
+          .catch(function () {
+            alert('An error occurred. Please try again.');
+          });
       });
     });
   }
@@ -148,52 +183,66 @@ jQuery(document).ready(function ($) {
     var defaultId = wcMultipleAddresses.default_address_id || '';
 
     photonAddressAutocomplete('#shipping_address_1', function (data) {
-      $('#shipping_address_1').val(data.line1);
-      $('#shipping_city').val(data.city);
-      $('#shipping_state').val(data.state).trigger('change');
-      $('#shipping_postcode').val(data.postcode);
-      $('#shipping_country').val('US').trigger('change');
+      setValueAndTrigger('#shipping_address_1', data.line1);
+      setValueAndTrigger('#shipping_city', data.city);
+      setValueAndTrigger('#shipping_state', data.state, true);
+      setValueAndTrigger('#shipping_postcode', data.postcode);
+      setValueAndTrigger('#shipping_country', 'US', true);
     });
 
-    $('#selected_address_id').on('change', function () {
-      var addressId = $(this).val();
-      var $shippingFields = $('.woocommerce-shipping-fields__field-wrapper');
+    var selectedAddressId = elemID('selected_address_id');
+    if (selectedAddressId) {
+      selectedAddressId.addEventListener('change', function () {
+        var addressId = this.value;
+        var shippingFields = select('.woocommerce-shipping-fields__field-wrapper');
 
-      if (addressId && addresses[addressId]) {
-        $shippingFields.hide();
-        var address = addresses[addressId];
-        $('#shipping_first_name').val(address.first_name);
-        $('#shipping_last_name').val(address.last_name);
-        $('#shipping_company').val(address.company);
-        $('#shipping_address_1').val(address.address_1);
-        $('#shipping_address_2').val(address.address_2);
-        $('#shipping_city').val(address.city);
-        $('#shipping_state').val(address.state);
-        $('#shipping_postcode').val(address.postcode);
-        $('#shipping_country').val(address.country).trigger('change');
-      } else {
-        $shippingFields.show();
-        $('#shipping_first_name').val('');
-        $('#shipping_last_name').val('');
-        $('#shipping_company').val('');
-        $('#shipping_address_1').val('');
-        $('#shipping_address_2').val('');
-        $('#shipping_city').val('');
-        $('#shipping_state').val('');
-        $('#shipping_postcode').val('');
-        $('#shipping_country').val('US').trigger('change');
+        if (addressId && addresses[addressId]) {
+          if (shippingFields) shippingFields.style.display = 'none';
+          var address = addresses[addressId];
+          elemID('shipping_first_name').value = address.first_name;
+          elemID('shipping_last_name').value = address.last_name;
+          elemID('shipping_company').value = address.company;
+          elemID('shipping_address_1').value = address.address_1;
+          elemID('shipping_address_2').value = address.address_2;
+          elemID('shipping_city').value = address.city;
+          elemID('shipping_state').value = address.state;
+          elemID('shipping_postcode').value = address.postcode;
+          setValueAndTrigger('#shipping_country', address.country, true);
+        } else {
+          if (shippingFields) shippingFields.style.display = 'block';
+          elemID('shipping_first_name').value = '';
+          elemID('shipping_last_name').value = '';
+          elemID('shipping_company').value = '';
+          elemID('shipping_address_1').value = '';
+          elemID('shipping_address_2').value = '';
+          elemID('shipping_city').value = '';
+          elemID('shipping_state').value = '';
+          elemID('shipping_postcode').value = '';
+          setValueAndTrigger('#shipping_country', 'US', true);
+        }
+      });
+
+      if (selectedAddressId.value) {
+        selectedAddressId.dispatchEvent(new Event('change'));
+      } else if (defaultId) {
+        selectedAddressId.value = defaultId;
+        selectedAddressId.dispatchEvent(new Event('change'));
       }
-    });
+    }
+  }
 
-    if ($('#selected_address_id').val()) {
-      $('#selected_address_id').trigger('change');
-    } else if (defaultId) {
-      $('#selected_address_id').val(defaultId).trigger('change');
+  function setValueAndTrigger(selector, value, changeEvent) {
+    var el = select(selector);
+    if (el) {
+      el.value = value;
+      if (changeEvent) {
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      }
     }
   }
 
   function photonAddressAutocomplete(selector, onSelect) {
-    if (!$(selector).length) return;
+    if (typeof jQuery === 'undefined' || !jQuery(selector).length) return;
 
     var usStates = {
       "Alabama": "AL", "Alaska": "AK", "Arizona": "AZ", "Arkansas": "AR", "California": "CA",
@@ -209,20 +258,21 @@ jQuery(document).ready(function ($) {
       "District of Columbia": "DC"
     };
 
-    $(selector).autocomplete({
+    jQuery(selector).autocomplete({
       source: function (request, response) {
-        $.ajax({
-          url: "https://photon.komoot.io/api/",
-          dataType: "json",
-          data: {
-            q: request.term,
-            limit: 20,
-            lang: 'en'
-          },
-          success: function (data) {
+        var url = new URL("https://photon.komoot.io/api/");
+        url.searchParams.append('q', request.term);
+        url.searchParams.append('limit', 20);
+        url.searchParams.append('lang', 'en');
+
+        fetch(url)
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
             var suggestions = [];
             if (data.features) {
-              $.each(data.features, function (i, feature) {
+              data.features.forEach(function (feature) {
                 var props = feature.properties;
 
                 if (props.countrycode === 'US' || props.country === 'United States') {
@@ -249,8 +299,11 @@ jQuery(document).ready(function ($) {
               });
             }
             response(suggestions);
-          }
-        });
+          })
+          .catch(function (error) {
+            console.error('Error fetching address suggestions:', error);
+            response([]);
+          });
       },
       minLength: 3,
       select: function (event, ui) {
