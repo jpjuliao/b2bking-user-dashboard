@@ -87,7 +87,11 @@ class Multiple_Addresses
     if (is_checkout() || is_account_page()) {
       $user_id = get_current_user_id();
       $addresses = $this->get_user_addresses($user_id);
-      $default_address_id = get_user_meta($user_id, '_wc_default_address_id', true);
+      $default_address_id = get_user_meta(
+        $user_id,
+        '_wc_default_address_id',
+        true
+      );
 
       wp_enqueue_style(
         'wc-multiple-addresses',

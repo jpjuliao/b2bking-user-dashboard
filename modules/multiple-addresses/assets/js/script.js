@@ -288,6 +288,9 @@ document.addEventListener('DOMContentLoaded', () => {
             response([]);
           });
       },
+      classes: {
+        'ui-autocomplete': 'wc-multiple-addresses-autocomplete'
+      },
       minLength: 3,
       select: (event, ui) => {
         if (onSelect) {
@@ -325,6 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
             label = housenumber;
           } else if (street) {
             label = street;
+            housenumber = street;
+          } else {
+            housenumber = label;
           }
 
           label = label + ', ' + city + ', ' + stateCode + ', ' + postcode;
