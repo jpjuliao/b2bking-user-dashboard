@@ -105,13 +105,27 @@ class Multiple_Addresses
         '1.0.0',
         true
       );
-      wp_localize_script('wc-multiple-addresses', 'wcMultipleAddresses', array(
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('wc_multiple_addresses'),
-        'addresses' => $addresses,
-        'default_address_id' => $default_address_id
-      ));
+
+      wp_localize_script(
+        'wc-multiple-addresses',
+        'wcMultipleAddresses',
+        array(
+          'ajax_url' => admin_url('admin-ajax.php'),
+          'nonce' => wp_create_nonce('wc_multiple_addresses'),
+          'addresses' => $addresses,
+          'default_address_id' => $default_address_id,
+          'us_states' => $this->get_us_states()
+        )
+      );
     }
+  }
+
+  public function get_us_states(): array
+  {
+    $us_states = file_get_contents(
+      plugin_dir_path(__FILE__) . 'assets/us-states.json'
+    );
+    return json_decode($us_states, true);
   }
 
   public function get_user_addresses(int $user_id): array
