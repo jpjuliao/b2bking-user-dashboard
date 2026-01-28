@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
       source: (request, response) => {
         const url = new URL(wcMultipleAddresses.photon_url);
         url.searchParams.append('q', request.term);
-        url.searchParams.append('limit', 20);
+        url.searchParams.append('limit', 50);
         url.searchParams.append('lang', 'en');
 
         fetch(url)
