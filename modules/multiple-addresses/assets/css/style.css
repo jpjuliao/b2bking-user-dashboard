@@ -31,6 +31,16 @@
   }
 }
 
+.save-address-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+
+  @media (max-width: 767px) {
+    display: block;
+  }
+}
+
 .woocommerce-addresses {
   .button.add-new-address {
     margin-bottom: 20px;

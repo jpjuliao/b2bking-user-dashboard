@@ -216,64 +216,64 @@ class Multiple_Addresses
         <h4>
           <?php _e('Address Details', 'woocommerce'); ?>
         </h4>
-        <form id="save-address-form">
+        <form id="save-address-form" class="save-address-form">
           <input type="hidden" name="address_id" id="address_id" value="">
           <p>
-            <label>
+            <label for="first_name">
               <?php _e('First Name', 'woocommerce'); ?> *
             </label>
             <input type="text" name="first_name" id="first_name" required>
           </p>
           <p>
-            <label>
+            <label for="last_name">
               <?php _e('Last Name', 'woocommerce'); ?> *
             </label>
             <input type="text" name="last_name" id="last_name" required>
           </p>
           <p>
-            <label>
+            <label for="company">
               <?php _e('Company', 'woocommerce'); ?>
             </label>
             <input type="text" name="company" id="company">
           </p>
           <p>
-            <label>
+            <label for="address_1">
               <?php _e('Address Line 1', 'woocommerce'); ?> *
             </label>
             <input type="text" name="address_1" id="address_1" required>
           </p>
           <p>
-            <label>
+            <label for="address_2">
               <?php _e('Address Line 2', 'woocommerce'); ?>
             </label>
             <input type="text" name="address_2" id="address_2">
           </p>
           <p>
-            <label>
+            <label for="city">
               <?php _e('City', 'woocommerce'); ?> *
             </label>
             <input type="text" name="city" id="city" required>
           </p>
           <p>
-            <label>
+            <label for="state">
               <?php _e('State / County', 'woocommerce'); ?> *
             </label>
             <input type="text" name="state" id="state" required>
           </p>
           <p>
-            <label>
+            <label for="postcode">
               <?php _e('Postcode / ZIP', 'woocommerce'); ?> *
             </label>
             <input type="text" name="postcode" id="postcode" required>
           </p>
           <p>
-            <label>
+            <label for="country">
               <?php _e('Country', 'woocommerce'); ?> *
             </label>
             <input type="text" name="country" id="country" required>
           </p>
           <p>
-            <label>
+            <label for="phone">
               <?php _e('Phone', 'woocommerce'); ?>
             </label>
             <input type="text" name="phone" id="phone">

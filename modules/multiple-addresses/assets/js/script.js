@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('[Multiple Addresses] jQuery is not defined');
     return;
   }
+
   if (typeof jQuery.ui === 'undefined') {
     console.error('[Multiple Addresses] jQuery UI is not defined');
     return;
@@ -213,10 +214,25 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // Billing address autocomplete
+    photonAddressAutocomplete('#billing_address_1', (data) => {
+      const fields = [
+        ['#billing_address_1', data.line1],
+        ['#billing_city', data.city],
+        ['#billing_state', data.state, true],
+        ['#billing_postcode', data.postcode],
+        ['#billing_country', 'US', true]
+      ];
+
+      fields.forEach(([selector, value, trigger]) => {
+        setValueAndTrigger(selector, value, trigger);
+      });
+    });
+
     const selectedAddressId = elemID('selected_address_id');
     if (selectedAddressId) {
-      selectedAddressId.addEventListener('change', () => {
-        const addressId = this.value;
+      selectedAddressId.addEventListener('change', (e) => {
+        const addressId = e.target.value;
         const shippingFields = select(
           '.woocommerce-shipping-fields__field-wrapper');
 
